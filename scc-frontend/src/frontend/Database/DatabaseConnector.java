@@ -1,4 +1,4 @@
-package scc.Database;
+package frontend.Database;
 
 import java.util.Arrays;
 import java.util.List;

@@ -1,4 +1,4 @@
-package scc.Database.resources;
+package frontend.Database.resources;
 
 import java.util.*;
 
