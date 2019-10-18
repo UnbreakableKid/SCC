@@ -1,21 +1,23 @@
 package scc.srv;
 
-import com.microsoft.azure.storage.CloudStorageAccount;
-import com.microsoft.azure.storage.StorageException;
-import com.microsoft.azure.storage.blob.CloudBlob;
-import com.microsoft.azure.storage.blob.CloudBlobClient;
-import com.microsoft.azure.storage.blob.CloudBlobContainer;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.security.InvalidKeyException;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.security.InvalidKeyException;
+
+import com.microsoft.azure.storage.CloudStorageAccount;
+import com.microsoft.azure.storage.StorageException;
+import com.microsoft.azure.storage.blob.CloudBlob;
+import com.microsoft.azure.storage.blob.CloudBlobClient;
+import com.microsoft.azure.storage.blob.CloudBlobContainer;
 
 @Path("/media")
 public class MediaResource {
@@ -42,18 +44,19 @@ public class MediaResource {
                 blob.uploadFromByteArray(contents, 0, contents.length);
 
             } catch (URISyntaxException | StorageException | IOException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
 
         } catch (URISyntaxException | StorageException | InvalidKeyException e1) {
-            // TODO Auto-generated catch block
             e1.printStackTrace();
         }
     }
 
+
     @GET
-    public void download(String name) {
+    @Path("/{name}")
+    @Produces({"image/png", "image/jpeg", "image/gif"})
+    public byte[] download(@PathParam("name") String name) {
 
         CloudBlobContainer container;
         try {
@@ -65,12 +68,23 @@ public class MediaResource {
             container = blobClient.getContainerReference("images");
 
             CloudBlob blob = container.getBlobReferenceFromServer(name);
+ 
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            
+            blob.download(out);
+            
+            out.close();
 
-            blob.download(new FileOutputStream("C:/Test" + blob.getName()));
+            byte[] contents = out.toByteArray();
+
+            return contents;
 
         } catch (URISyntaxException | StorageException | IOException | InvalidKeyException e1) {
             e1.printStackTrace();
 
         }
+
+        
+
     }
 }

@@ -15,6 +15,30 @@ public class Posts
 		return title;
 	}
 
+	public int getLikes() {
+		return likes;
+	}
+
+	public void setLikes(int likes) {
+		this.likes = likes;
+	}
+
+	public Communities getCommunity() {
+		return community;
+	}
+
+	public void setCommunity(Communities community) {
+		this.community = community;
+	}
+
+	public Users getUser() {
+		return user;
+	}
+
+	public void setUser(Users user) {
+		this.user = user;
+	}
+
 	public void setTitle(String title) {
 		this.title = title;
 	}
