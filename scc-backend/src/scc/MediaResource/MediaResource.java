@@ -19,7 +19,7 @@ import com.microsoft.azure.storage.blob.CloudBlob;
 import com.microsoft.azure.storage.blob.CloudBlobClient;
 import com.microsoft.azure.storage.blob.CloudBlobContainer;
 
-@Path("/media")
+@Path("/images")
 public class MediaResource {
 
     String storageConnectionString = "DefaultEndpointsProtocol=https;AccountName=scc56982;AccountKey=VXmXlnQOK01LACbV5NC4+7tVl84Rvth2MIPRyclUH3RC67pjQ2t1eLa+o89HsyRWwUwTQdJeLX6yVnoJSA/ERA==;EndpointSuffix=core.windows.net";
@@ -55,9 +55,9 @@ public class MediaResource {
 
 
     @GET
-    @Path("/{name}")
+    @Path("/{id}")
     @Produces({"image/png", "image/jpeg", "image/gif"})
-    public byte[] download(@PathParam("name") String name) {
+    public byte[] download(@PathParam("id") String name) {
 
         byte[] contents = null;
         CloudBlobContainer container;
