@@ -1,0 +1,5 @@
+resources\Database\DatabaseConnector.class
+resources\Database\resources\Posts.class
+scc\DbResources\PostResource.class
+resources\Database\resources\Communities.class
+resources\Database\resources\Users.class
