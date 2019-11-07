@@ -20,7 +20,7 @@ public class DatabaseConnector {
  
    	private static AsyncDocumentClient client;
 
-    public static synchronized AsyncDocumentClient getDocumentClient() {
+    public synchronized AsyncDocumentClient getDocumentClient() {
         if (client == null) {
             ConnectionPolicy connectionPolicy = ConnectionPolicy.GetDefault();
             client = new AsyncDocumentClient.Builder().withServiceEndpoint(rb.getString("db.endpoint"))
@@ -34,7 +34,7 @@ public class DatabaseConnector {
 		return String.format("/dbs/%s", rb.getString("db.database"));
 	}
     
-    public static String getCollectionString(String col) {
+    public String getCollectionString(String col) {
         return String.format("/dbs/%s/colls/%s", rb.getString("db.database"), col);
     }
     
