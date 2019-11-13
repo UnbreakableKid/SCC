@@ -32,7 +32,7 @@ public class UserResource {
         queryOptions.setMaxDegreeOfParallelism(-1);
 
         Iterator<FeedResponse<Document>> it = client.queryDocuments(
-                UsersCollection, String.format("SELECT * FROM Users u WHERE u.username = '%s'", id),
+                UsersCollection, String.format("SELECT * FROM Users u WHERE u.name = '%s'", id),
                 queryOptions).toBlocking().getIterator();
 
         	if( it.hasNext())
