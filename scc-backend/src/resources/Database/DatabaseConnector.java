@@ -15,7 +15,7 @@ import com.microsoft.azure.cosmosdb.rx.AsyncDocumentClient;
 
 public class DatabaseConnector {
     
-    private static ResourceBundle rb = ResourceBundle.getBundle("config");
+    private static ResourceBundle rb = ResourceBundle.getBundle("resources.config");
 
  
    	private static AsyncDocumentClient client;

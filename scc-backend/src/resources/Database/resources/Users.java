@@ -1,20 +1,23 @@
 package resources.Database.resources;
 
+import java.util.UUID;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Users
 {
 	private String name;
-	private String id;
+	private UUID id;
 
-	public String getId() {
+	public UUID getId() {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(UUID id) {
 		this.id = id;
 	}
+
 
 	public String getName() {
 		return name;
