@@ -1,18 +1,22 @@
 package main.java.frontend;
 
-import com.microsoft.azure.cosmosdb.*;
-
-import com.microsoft.azure.cosmosdb.rx.AsyncDocumentClient;
-import main.java.Database.DatabaseConnector;
-import main.java.Database.resources.Users;
-
 import java.util.Iterator;
+import java.util.UUID;
+
 import com.google.gson.Gson;
+import com.microsoft.azure.cosmosdb.Document;
+import com.microsoft.azure.cosmosdb.FeedOptions;
+import com.microsoft.azure.cosmosdb.FeedResponse;
+import com.microsoft.azure.cosmosdb.rx.AsyncDocumentClient;
+
+import main.java.frontend.Database.DatabaseConnector;
+import main.java.frontend.Database.resources.Users;
+
 
 
 public class Test {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 
 		DatabaseConnector db = new DatabaseConnector();
 		AsyncDocumentClient client = db.getDocumentClient();
@@ -22,9 +26,9 @@ public class Test {
 		//db.createNewDBEntry("Users", "/name", client);
 		Users user = new Users();
 		user.setName("Test");
-		user.setId("2");
+        UUID id = UUID.randomUUID();
+		user.setId(id);
 
-		//client.createDocument(db.getCollectionString("Users"), user, new RequestOptions(), true);
 
 		//Inserting Works
 		/*
@@ -32,7 +36,7 @@ public class Test {
 		client.createDocument(collectionLink, user, null, true)
         .toCompletable()
 				.await();
-		*/
+	*/
 
 		FeedOptions queryOptions = new FeedOptions();
 		queryOptions.setEnableCrossPartitionQuery(true);
@@ -48,17 +52,18 @@ public class Test {
 				System.out.println( d.toJson());
 
 		it = client.queryDocuments(
-				UsersCollection, "SELECT * FROM Users u WHERE u.id = '2'",
+				UsersCollection, "SELECT * FROM Users u WHERE u.name = 'Test'",
 				queryOptions).toBlocking().getIterator();
 
 		System.out.println( "Result:");
-		while( it.hasNext())
-			for( Document d : it.next().getResults()) {
-				System.out.println( d.toJson());
+		if( it.hasNext())
+			for (Document d : it.next().getResults()) {
 				Gson g = new Gson();
 				Users u = g.fromJson(d.toJson(), Users.class);
-				System.out.println( u.getId());
+				System.out.println("He has id:" + u.getId());
 			}
+		else
+			throw new Exception("doesn't exist");
 		System.out.println("done");
 
 

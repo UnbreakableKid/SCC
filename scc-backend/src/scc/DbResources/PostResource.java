@@ -1,5 +1,7 @@
 package scc.DbResources;
 
+import com.google.gson.Gson;
+
 import com.microsoft.azure.cosmosdb.Document;
 import com.microsoft.azure.cosmosdb.FeedOptions;
 import com.microsoft.azure.cosmosdb.FeedResponse;
@@ -17,12 +19,13 @@ public class PostResource {
     private DatabaseConnector db = new DatabaseConnector();
     private AsyncDocumentClient client = db.getDocumentClient();
 
-    private String UsersCollection = db.getCollectionString("Users");
+    private String UsersCollection = db.getCollectionString("Posts");
+    
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
 
-    public Document getPost(@PathParam("id") String id){
+    public Posts getPost(@PathParam("id") String id){
 
 
         FeedOptions queryOptions = new FeedOptions();
@@ -30,18 +33,24 @@ public class PostResource {
         queryOptions.setMaxDegreeOfParallelism(-1);
 
         Iterator<FeedResponse<Document>> it = client.queryDocuments(
-                UsersCollection, String.format("SELECT * FROM Posts WHERE id = %s", id),
+                UsersCollection, String.format("SELECT * FROM Posts p WHERE p.id = '%s'", id),
                 queryOptions).toBlocking().getIterator();
 
-        for( Document d : it.next().getResults())
-            return d;
+       
+        	if( it.hasNext())
+			for( Document d : it.next().getResults()) {
+				System.out.println( d.toJson());
+				Gson g = new Gson();
+				Posts u = g.fromJson(d.toJson(), Posts.class);
+                return u;
+			}
 
         return null;
+
     }
 
-    @PUT
+    @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
 
     public void addPost(Posts post){
 

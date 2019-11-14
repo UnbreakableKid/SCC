@@ -7,6 +7,8 @@ import com.microsoft.azure.cosmosdb.rx.AsyncDocumentClient;
 import resources.Database.DatabaseConnector;
 import resources.Database.resources.Communities;
 
+        import com.google.gson.Gson;
+
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.Iterator;
@@ -23,7 +25,7 @@ public class CommunityResource
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
 
-    public Document getCommunity(@PathParam("id") String id){
+    public Communities getCommunity(@PathParam("id") String id){
 
 
         FeedOptions queryOptions = new FeedOptions();
@@ -31,11 +33,16 @@ public class CommunityResource
         queryOptions.setMaxDegreeOfParallelism(-1);
 
         Iterator<FeedResponse<Document>> it = client.queryDocuments(
-                UsersCollection, String.format("SELECT * FROM Communities WHERE id = %s", id),
+                UsersCollection, String.format("SELECT * FROM Communities c WHERE c.id = '%s'", id),
                 queryOptions).toBlocking().getIterator();
 
-        for( Document d : it.next().getResults())
-            return d;
+        if( it.hasNext())
+			for( Document d : it.next().getResults()) {
+				System.out.println( d.toJson());
+				Gson g = new Gson();
+				Communities u = g.fromJson(d.toJson(), Communities.class);
+                return u;
+			}
 
         return null;
     }

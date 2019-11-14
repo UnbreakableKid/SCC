@@ -1,4 +1,4 @@
-package resources.Database;
+package main.java.frontend.Database;
 
 import java.util.ResourceBundle;
 
@@ -8,7 +8,7 @@ import com.microsoft.azure.cosmosdb.rx.AsyncDocumentClient;
 
 public class DatabaseConnector {
     
-    private static ResourceBundle rb = ResourceBundle.getBundle("resources.config");
+    private static ResourceBundle rb = ResourceBundle.getBundle("config");
 
  
    	private static AsyncDocumentClient client;

@@ -1,9 +1,9 @@
-package main.java.Database.resources;
+package main.java.frontend.Database.resources;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Users
+public class Communities
 {
 	private String name;
 	private String id;
@@ -24,4 +24,5 @@ public class Users
 		this.name = name;
 	}
 
+	
 }

@@ -1,8 +1,8 @@
-package frontend.Database.resources;
-
-import java.util.*;
+package resources.Database.resources;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import java.util.Date;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Posts

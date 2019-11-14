@@ -13,7 +13,7 @@ import javax.ws.rs.core.MediaType;
 import java.util.Iterator;
 import java.util.UUID;
 
-@Path("/v1/users")
+@Path("/users")
 public class UserResource {
 
     private DatabaseConnector db = new DatabaseConnector();

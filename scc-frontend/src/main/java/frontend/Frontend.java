@@ -4,19 +4,23 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Iterator;
 
+import com.google.gson.Gson;
 import com.microsoft.azure.cosmosdb.*;
 import com.microsoft.azure.cosmosdb.rx.AsyncDocumentClient;
 
-import main.java.Database.DatabaseConnector;
+import main.java.frontend.Database.DatabaseConnector;
+import main.java.frontend.Database.resources.Posts;
+
 
 public class Frontend {
-    private static DatabaseConnector dbconnector;
-    private static AsyncDocumentClient client;
+    private static DatabaseConnector db = new DatabaseConnector();
+    private static AsyncDocumentClient client = db.getDocumentClient();
+
+    private static String UsersCollection = db.getCollectionString("Users");
 
     public static void main(String[] args) throws IOException {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-        dbconnector = new DatabaseConnector();
-        client = dbconnector.getDocumentClient();
+    BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+    
 
 
         String line;
@@ -39,15 +43,25 @@ public class Frontend {
     }
 
     private static void initialPage(){
-        // as this is a multi collection enable cross partition query
-        FeedOptions options = new FeedOptions();
-        options.setEnableCrossPartitionQuery(true);
+     
+        FeedOptions queryOptions = new FeedOptions();
+        queryOptions.setEnableCrossPartitionQuery(true);
+        queryOptions.setMaxDegreeOfParallelism(-1);
 
-        String collectionLink = dbconnector.getCollectionString("Posts");
+        Iterator<FeedResponse<Document>> it = client.queryDocuments(
+                UsersCollection, String.format("SELECT * FROM Posts"),
+                queryOptions).toBlocking().getIterator();
 
-        Iterator<FeedResponse<Document>> it = client.queryDocuments(collectionLink, "SELECT * FROM Posts", options).toBlocking().getIterator();
-
-        //TODO do something with the posts
+    
+        int i = 0;
+        while( it.hasNext() && i < 10)
+            for( Document d : it.next().getResults()) {
+                    System.out.println( d.toJson());
+                    Gson g = new Gson();
+                    Posts u = g.fromJson(d.toJson(), Posts.class);
+                    System.out.println(u);
+                    i++;
+            }
 
     }
 
