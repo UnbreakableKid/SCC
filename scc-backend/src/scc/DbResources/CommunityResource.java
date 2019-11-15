@@ -47,7 +47,7 @@ public class CommunityResource
         return null;
     }
 
-    @PUT
+    @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
 
