@@ -1,4 +1,4 @@
-package main.java.frontend.Database.resources;
+package resources.Database.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 

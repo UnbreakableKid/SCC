@@ -1,4 +1,4 @@
-package resources.Database.resources;
+package resources.Database.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -12,7 +12,6 @@ public class Posts
 	private Communities community;
 	private Users creator;
 	private String message;
-	private Date date;
 	private String linkToMultimedia;
 	private String linkToParent;
 	private int likes;
@@ -22,13 +21,6 @@ public class Posts
 		return title;
 	}
 
-	public void setDate(Date date) {
-		this.date = date;
-	}
-
-	public Date getDate() {
-		return date;
-	}
 
 	public String getLinkToMultimedia() {
 		return linkToMultimedia;

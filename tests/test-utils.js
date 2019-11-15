@@ -91,6 +91,8 @@ function genNewUserReply(requestParams, response, context, ee, next) {
 
 function genNewCommunity(context, events, done) {
   const name = `s/${Faker.lorem.word()}`;
+  const id = makeid(20);
+  context.vars.id = id;
   context.vars.name = name;
   communityNames.push(name);
   fs.writeFileSync("communitynames.data", JSON.stringify(communityNames));

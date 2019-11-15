@@ -18,5 +18,6 @@ scenarios:
               headers:
                 Accept: text/plain
               json:
+                id: "{{id}}"
                 name: "{{ name }}"
         count: 30
