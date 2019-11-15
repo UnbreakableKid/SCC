@@ -20,5 +20,5 @@ scenarios:
               json:
                 id: "{{id}}"
                 name: "{{ name }}"
-              afterResponse: "genNewUserReply"
+              #afterResponse: "genNewUserReply"
         count: 100

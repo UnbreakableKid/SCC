@@ -81,7 +81,7 @@ public class UserResource {
         String collectionLink = String.format("/dbs/%s/colls/%s", "SCC-56982", "Users");
         client.createDocument(collectionLink, user, null, true).toCompletable().await();
 
-            return user.id();
+        return user.getId();
 
     }
 

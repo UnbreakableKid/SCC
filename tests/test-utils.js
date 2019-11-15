@@ -71,9 +71,12 @@ function loadData() {
 
 function genNewUser(context, events, done) {
   const name = `${Faker.name.firstName()}.${Faker.name.lastName()}`;
-  context.vars.id = makeid(20);
+  const id = makeid(20);
+  context.vars.id = id;
   context.vars.name = name;
   userNames.push(name);
+  userIds.push(id);
+  fs.writeFileSync("userids.data", JSON.stringify(userIds));
   fs.writeFileSync("usernames.data", JSON.stringify(userNames));
   return done();
 }
