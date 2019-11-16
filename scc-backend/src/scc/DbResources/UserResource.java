@@ -16,6 +16,7 @@ import com.google.gson.Gson;
 import com.microsoft.azure.cosmosdb.Document;
 import com.microsoft.azure.cosmosdb.FeedOptions;
 import com.microsoft.azure.cosmosdb.FeedResponse;
+import com.microsoft.azure.cosmosdb.ResourceResponse;
 import com.microsoft.azure.cosmosdb.rx.AsyncDocumentClient;
 
 import resources.Database.DatabaseConnector;
@@ -85,9 +86,9 @@ public class UserResource {
     public String addUser(Users user) {
 
         String collectionLink = String.format("/dbs/%s/colls/%s", "SCC-56982", "Users");
-        client.createDocument(collectionLink, user, null, true).toCompletable().await();
-
-        return user.getId();
+        ResourceResponse<Document> resourceResponse = client.createDocument(collectionLink, user, null, false).toBlocking().last();
+        Document document = resourceResponse.getResource();
+        return document.get("id").toString();
 
     }
 

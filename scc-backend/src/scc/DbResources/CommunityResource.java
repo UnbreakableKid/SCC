@@ -14,6 +14,7 @@ import com.google.gson.Gson;
 import com.microsoft.azure.cosmosdb.Document;
 import com.microsoft.azure.cosmosdb.FeedOptions;
 import com.microsoft.azure.cosmosdb.FeedResponse;
+import com.microsoft.azure.cosmosdb.ResourceResponse;
 import com.microsoft.azure.cosmosdb.rx.AsyncDocumentClient;
 
 import resources.Database.DatabaseConnector;
@@ -58,11 +59,10 @@ public class CommunityResource
 
     public String addCommunity(Communities community){
 
-        String collectionLink = String.format("/dbs/%s/colls/%s", "SCC-56982", "Communities");
-        client.createDocument(collectionLink, community, null, true)
-                .toCompletable()
-                .await();
-        return community.getId();
+         String collectionLink = String.format("/dbs/%s/colls/%s", "SCC-56982", "Communities");
+        ResourceResponse<Document> resourceResponse = client.createDocument(collectionLink, community, null, false).toBlocking().last();
+        Document document = resourceResponse.getResource();
+        return document.get("id").toString();
     }
 
 }
