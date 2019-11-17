@@ -18,7 +18,6 @@ scenarios:
               headers:
                 Accept: text/plain
               json:
-                id: "{{id}}"
-                name: "{{ name }}"
-              #afterResponse: "genNewUserReply"
-        count: 100
+                name: "{{name}}"
+              afterResponse: "genNewUserReply"
+        count: 2

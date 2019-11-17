@@ -1,2 +1,2 @@
-resources\Database\DatabaseConnector.class
 scc\DbResources\PostResource.class
+resources\Database\DatabaseConnector.class

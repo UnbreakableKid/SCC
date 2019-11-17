@@ -4,6 +4,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
+import java.util.Random;
+import java.util.UUID;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -19,17 +21,22 @@ import com.microsoft.azure.storage.blob.CloudBlob;
 import com.microsoft.azure.storage.blob.CloudBlobClient;
 import com.microsoft.azure.storage.blob.CloudBlobContainer;
 
-@Path("/images")
+@Path("/media")
 public class MediaResource {
 
     String storageConnectionString = "DefaultEndpointsProtocol=https;AccountName=scc56982;AccountKey=VXmXlnQOK01LACbV5NC4+7tVl84Rvth2MIPRyclUH3RC67pjQ2t1eLa+o89HsyRWwUwTQdJeLX6yVnoJSA/ERA==;EndpointSuffix=core.windows.net";
    
 
     @POST
-    @Path("/upload")
     @Consumes(MediaType.APPLICATION_OCTET_STREAM)
     @Produces(MediaType.APPLICATION_JSON)
-    public void upload(String id, byte[] contents) {
+    public String upload(byte[] contents) {
+
+
+        byte[] array = new byte[7];
+        new Random().nextBytes(array);
+
+        String filename = UUID.randomUUID() + ".jpg";
 
         CloudBlobContainer container;
         try {
@@ -41,15 +48,19 @@ public class MediaResource {
             container = blobClient.getContainerReference("images");
 
             try {
-                CloudBlob blob = container.getBlockBlobReference(id);
+                CloudBlob blob = container.getBlockBlobReference(filename);
                 blob.uploadFromByteArray(contents, 0, contents.length);
+
+                return filename;
 
             } catch (URISyntaxException | StorageException | IOException e) {
                 e.printStackTrace();
+                return "";
             }
 
         } catch (URISyntaxException | StorageException | InvalidKeyException e1) {
             e1.printStackTrace();
+            return "";
         }
     }
 

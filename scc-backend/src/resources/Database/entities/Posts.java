@@ -10,9 +10,9 @@ public class Posts
 	private String title;
 	private Communities community;
 	private Users creator;
-	private String message;
-	private String linkToMultimedia;
-	private String linkToParent;
+	private String msg;
+	private String image;
+	private String parentId;
 	private int likes;
 	
 
@@ -21,20 +21,20 @@ public class Posts
 	}
 
 
-	public String getLinkToMultimedia() {
-		return linkToMultimedia;
+	public String getImage() {
+		return image;
 	}
 
-	public void setLinkToMultimedia(String linkToMultimedia) {
-		this.linkToMultimedia = linkToMultimedia;
+	public void setImage(String image) {
+		this.image = image;
 	}
 
-	public String getLinkToParent() {
-		return linkToParent;
+	public String getParentId() {
+		return parentId;
 	}
 
-	public void setLinkToParent(String linkToParent) {
-		this.linkToParent = linkToParent;
+	public void setParentId(String parentId) {
+		this.parentId = parentId;
 	}
 
 	public int getLikes() {
@@ -42,12 +42,12 @@ public class Posts
 	}
 
 	public String getMessage() {
-		return message;
+		return msg;
 	}
 
 
 	public void setMessage(String message) {
-		this.message = message;
+		this.msg = message;
 	}
 
 	public void setLikes(int likes) {

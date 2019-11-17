@@ -24,7 +24,7 @@ scenarios:
               afterResponse: "genNewImageReply"
               ifTrue: "hasImage"
           - post:
-              url: "/post/p"
+              url: "/post"
               headers:
                 Accept: text/plain
               json:
@@ -34,4 +34,4 @@ scenarios:
                 image: "{{ imageId }}"
                 parentId: "{{ parentId }}"
               afterResponse: "genNewPostReply"
-        count: 200
+        count: 2
