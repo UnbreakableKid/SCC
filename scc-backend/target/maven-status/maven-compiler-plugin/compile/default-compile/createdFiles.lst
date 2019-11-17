@@ -1,2 +1,3 @@
 scc\DbResources\PostResource.class
 resources\Database\DatabaseConnector.class
+scc\pages\InitialPage.class

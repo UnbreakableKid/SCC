@@ -17,7 +17,7 @@ import resources.Database.DatabaseConnector;
 import resources.Database.entities.Posts;
 
 
-@Path("/home")
+@Path("/pages/initial")
 public class InitialPage {
 
     private DatabaseConnector db = new DatabaseConnector();

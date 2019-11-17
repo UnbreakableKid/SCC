@@ -1,5 +1,8 @@
 package resources.Database.entities;
 
+import java.util.Date;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 
@@ -10,14 +13,25 @@ public class Posts
 	private String title;
 	private Communities community;
 	private Users creator;
+	private Date date;
 	private String msg;
 	private String image;
 	private String parentId;
-	private int likes;
+	private List<Users> likes;
 	
 
 	public String getTitle() {
 		return title;
+	}
+
+
+	public Date getDate() {
+		return date;
+	}
+
+
+	public void setDate(Date date) {
+		this.date = date;
 	}
 
 
@@ -37,7 +51,7 @@ public class Posts
 		this.parentId = parentId;
 	}
 
-	public int getLikes() {
+	public List<Users> getLikes() {
 		return likes;
 	}
 
@@ -50,7 +64,7 @@ public class Posts
 		this.msg = message;
 	}
 
-	public void setLikes(int likes) {
+	public void setLikes(List<Users> likes) {
 		this.likes = likes;
 	}
 
