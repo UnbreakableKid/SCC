@@ -13,10 +13,12 @@ public class Frontend {
     private static DatabaseConnector dbconnector;
     private static AsyncDocumentClient client;
 
+
     public static void main(String[] args) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         dbconnector = new DatabaseConnector();
         client = dbconnector.getDocumentClient();
+        Jedis jedis = cache;
 
 
         String line;

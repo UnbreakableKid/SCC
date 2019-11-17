@@ -13,12 +13,17 @@ import com.microsoft.azure.cosmosdb.UniqueKey;
 import com.microsoft.azure.cosmosdb.UniqueKeyPolicy;
 import com.microsoft.azure.cosmosdb.rx.AsyncDocumentClient;
 
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.exceptions.JedisException;
+
 public class DatabaseConnector {
     
     private static ResourceBundle rb = ResourceBundle.getBundle("config");
 
- 
    	private static AsyncDocumentClient client;
+
+   	private static Jedis cache = null;
 
     public synchronized AsyncDocumentClient getDocumentClient() {
         if (client == null) {
@@ -82,6 +87,19 @@ public class DatabaseConnector {
         
     }
 
+    public Jedis connectToCache(){
+        String RedisHostname;
+        String cacheKey;
+        int cachePort;
+
+        if(jedis != null) {
+            JedisShardInfo shardInfo = new JedisShardInfo(RedisHostname, cachePort, true);
+            shardInfo.setPassword(cacheKey);
+            jedis = new Jedis(shardInfo);
+        }
+        return jedis;
+
+    }
 
     
     
