@@ -39,7 +39,7 @@ public class InitialPage {
         if (USINGCACHE) {
             
             Jedis jedis = new RedisConnector().createClient();
-            List<String> lst = jedis.lrange("MostRecentPosts", 0, 5);
+            List<String> lst = jedis.lrange("MostRecentPosts", 0, 10);
             if (!lst.isEmpty()) {
 
                 System.out.println("WENT TO CACHE");
@@ -68,9 +68,9 @@ public class InitialPage {
                     }
                
                 if (cnt > 5)
-                    jedis.ltrim("MostRecentPosts", 0, 5);
+                    jedis.ltrim("MostRecentPosts", 0, 10);
 
-                lst = jedis.lrange("MostRecentPosts", 0, 5);
+                lst = jedis.lrange("MostRecentPosts", 0, 10);
                 return lst;
 
             }
