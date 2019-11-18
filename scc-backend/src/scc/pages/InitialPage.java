@@ -54,7 +54,7 @@ public class InitialPage {
                 queryOptions.setMaxDegreeOfParallelism(-1);
 
                 Iterator<FeedResponse<Document>> it = client
-                        .queryDocuments(UsersCollection, String.format("SELECT * FROM Posts"), queryOptions)
+                        .queryDocuments(UsersCollection, String.format("SELECT * FROM Posts p ORDER BY p._ts ASC"), queryOptions)
                         .toBlocking().getIterator();
 
                 while (it.hasNext())
@@ -81,7 +81,7 @@ public class InitialPage {
                 queryOptions.setMaxDegreeOfParallelism(-1);
 
                 Iterator<FeedResponse<Document>> it = client
-                        .queryDocuments(UsersCollection, String.format("SELECT * FROM Posts"), queryOptions)
+                        .queryDocuments(UsersCollection, String.format("SELECT * FROM Posts p ORDER BY p._ts ASC"), queryOptions)
                         .toBlocking().getIterator();
 
                 while (it.hasNext())

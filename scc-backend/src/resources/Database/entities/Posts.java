@@ -13,7 +13,7 @@ public class Posts
 	private String title;
 	private Communities community;
 	private Users creator;
-	private Date date;
+	private String date;
 	private String msg;
 	private String image;
 	private String parentId;
@@ -25,12 +25,12 @@ public class Posts
 	}
 
 
-	public Date getDate() {
+	public String getDate() {
 		return date;
 	}
 
 
-	public void setDate(Date date) {
+	public void setDate(String date) {
 		this.date = date;
 	}
 
