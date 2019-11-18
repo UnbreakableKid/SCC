@@ -1,11 +1,12 @@
-C:\Users\dblam\Documents\SCC\Work\scc-backend\src\scc\DbResources\CommunityResource.java
 C:\Users\dblam\Documents\SCC\Work\scc-backend\src\resources\Database\entities\Communities.java
 C:\Users\dblam\Documents\SCC\Work\scc-backend\src\scc\DbResources\MediaResource.java
-C:\Users\dblam\Documents\SCC\Work\scc-backend\src\resources\Database\entities\Posts.java
 C:\Users\dblam\Documents\SCC\Work\scc-backend\src\resources\Database\DatabaseConnector.java
+C:\Users\dblam\Documents\SCC\Work\scc-backend\src\scc\DbResources\UserResource.java
+C:\Users\dblam\Documents\SCC\Work\scc-backend\src\scc\DbResources\CommunityResource.java
+C:\Users\dblam\Documents\SCC\Work\scc-backend\src\resources\Database\RedisConnector.java
+C:\Users\dblam\Documents\SCC\Work\scc-backend\src\resources\Database\entities\Posts.java
 C:\Users\dblam\Documents\SCC\Work\scc-backend\src\resources\Database\entities\Users.java
 C:\Users\dblam\Documents\SCC\Work\scc-backend\src\scc\srv\MainApplication.java
-C:\Users\dblam\Documents\SCC\Work\scc-backend\src\scc\DbResources\UserResource.java
 C:\Users\dblam\Documents\SCC\Work\scc-backend\src\scc\MediaResource\MediaResource.java
 C:\Users\dblam\Documents\SCC\Work\scc-backend\src\scc\DbResources\PostResource.java
 C:\Users\dblam\Documents\SCC\Work\scc-backend\src\scc\pages\InitialPage.java
