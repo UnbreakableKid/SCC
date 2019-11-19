@@ -66,12 +66,17 @@ public class PostResource {
 
     public String addPost(Posts post) {
 
-        String collectionLink = String.format("/dbs/%s/colls/%s", "SCC-56982", "Posts");
-        ResourceResponse<Document> resourceResponse = client.createDocument(collectionLink, post, null, false)
-                .toBlocking().last();
-        Document document = resourceResponse.getResource();
-        return document.get("id").toString();
+        UserResource ur = new UserResource();
+        Users u = ur.getUser(post.getCreator().getId());
+        if (u != null) {
 
+            String collectionLink = String.format("/dbs/%s/colls/%s", "SCC-56982", "Posts");
+            ResourceResponse<Document> resourceResponse = client.createDocument(collectionLink, post, null, false)
+                    .toBlocking().last();
+            Document document = resourceResponse.getResource();
+            return document.get("id").toString();
+        }
+        return null;
     }
     
     @PUT
