@@ -1,4 +1,4 @@
-package resources.Database.entities;
+package war.entities;
 
 import java.util.List;
 
