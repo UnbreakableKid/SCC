@@ -85,10 +85,15 @@ public class UserResource {
     @Consumes(MediaType.APPLICATION_JSON)
     public String addUser(Users user) {
 
-        String collectionLink = String.format("/dbs/%s/colls/%s", "SCC-56982", "Users");
-        ResourceResponse<Document> resourceResponse = client.createDocument(collectionLink, user, null, false).toBlocking().last();
-        Document document = resourceResponse.getResource();
-        return document.get("id").toString();
+        if (user.getName() != null) {
+            String collectionLink = String.format("/dbs/%s/colls/%s", "SCC-56982", "Users");
+            ResourceResponse<Document> resourceResponse = client.createDocument(collectionLink, user, null, false)
+                    .toBlocking().last();
+            Document document = resourceResponse.getResource();
+            return document.get("id").toString();
+        }
+        else
+            return null;
 
     }
 

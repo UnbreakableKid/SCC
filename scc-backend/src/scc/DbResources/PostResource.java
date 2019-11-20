@@ -1,5 +1,6 @@
 package scc.DbResources;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -22,6 +23,7 @@ import com.microsoft.azure.cosmosdb.ResourceResponse;
 import com.microsoft.azure.cosmosdb.rx.AsyncDocumentClient;
 
 import resources.Database.DatabaseConnector;
+import resources.Database.entities.Communities;
 import resources.Database.entities.Posts;
 import resources.Database.entities.Users;
 
@@ -37,27 +39,53 @@ public class PostResource {
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
 
-    public Posts getPost(@PathParam("id") String id){
-
+    public Posts getPost(@PathParam("id") String id) {
 
         FeedOptions queryOptions = new FeedOptions();
         queryOptions.setEnableCrossPartitionQuery(true);
         queryOptions.setMaxDegreeOfParallelism(-1);
 
+        Iterator<FeedResponse<Document>> it = client.queryDocuments(UsersCollection,
+                String.format("SELECT * FROM Posts p WHERE p.id = '%s'", id), queryOptions).toBlocking().getIterator();
+
+        if (it.hasNext())
+            for (Document d : it.next().getResults()) {
+                System.out.println(d.toJson());
+                Gson g = new Gson();
+                Posts u = g.fromJson(d.toJson(), Posts.class);
+                return u;
+            }
+
+        return null;
+
+    }
+    
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+
+    public List<Posts> getReplies(@PathParam("id") String id){
+
+        List<Posts> z = new ArrayList<>();
+        FeedOptions queryOptions = new FeedOptions();
+        queryOptions.setEnableCrossPartitionQuery(true);
+        queryOptions.setMaxDegreeOfParallelism(-1);
+
         Iterator<FeedResponse<Document>> it = client.queryDocuments(
-                UsersCollection, String.format("SELECT * FROM Posts p WHERE p.id = '%s'", id),
+                UsersCollection, String.format("SELECT * FROM Posts p WHERE p.parentId = '%s'", id),
                 queryOptions).toBlocking().getIterator();
 
        
-        	if( it.hasNext())
-			for( Document d : it.next().getResults()) {
+        while (it.hasNext()) {
+            for (Document d : it.next().getResults()) {
+                System.out.println("Reply:");
                 System.out.println(d.toJson());
-				Gson g = new Gson();
-				Posts u = g.fromJson(d.toJson(), Posts.class);
-                return u;
-			}
+                Gson g = new Gson();
+                Posts u = g.fromJson(d.toJson(), Posts.class);
+                z.add(u);
+            }
+        }
 
-        return null;
+        return z;
 
     }
 
@@ -67,8 +95,11 @@ public class PostResource {
     public String addPost(Posts post) {
 
         UserResource ur = new UserResource();
+        CommunityResource cr = new CommunityResource();
         Users u = ur.getUser(post.getCreator().getId());
-        if (u != null) {
+        Communities c = cr.getCommunity(post.getCommunity().getId());
+        
+        if (u != null && c != null && post.getLikes().size() == 0) {
 
             String collectionLink = String.format("/dbs/%s/colls/%s", "SCC-56982", "Posts");
             ResourceResponse<Document> resourceResponse = client.createDocument(collectionLink, post, null, false)

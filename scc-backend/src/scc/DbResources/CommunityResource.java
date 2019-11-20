@@ -57,12 +57,15 @@ public class CommunityResource
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
 
-    public String addCommunity(Communities community){
+    public String addCommunity(Communities community) {
 
+        if (community.getName() != null){
          String collectionLink = String.format("/dbs/%s/colls/%s", "SCC-56982", "Communities");
         ResourceResponse<Document> resourceResponse = client.createDocument(collectionLink, community, null, false).toBlocking().last();
         Document document = resourceResponse.getResource();
         return document.get("id").toString();
+        } else
+            return null;
     }
 
 }
