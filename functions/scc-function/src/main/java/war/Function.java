@@ -32,7 +32,6 @@ public class Function {
         try (Jedis jedis = new RedisConnector().createClient();
         ) {
 
-            Long cnt = 0L;
             DatabaseConnector db = new DatabaseConnector();
             AsyncDocumentClient client = db.getDocumentClient();
             String UsersCollection = db.getCollectionString("Posts");
@@ -53,7 +52,8 @@ public class Function {
                     Posts u = g.fromJson(d.toJson(), Posts.class);
                     String json = new Gson().toJson(u);
 
-                    cnt = jedis.lpush("MostRecentPosts", json);
+                    
+                    jedis.lpush("MostRecentPosts", json);
                 }
 
         }
