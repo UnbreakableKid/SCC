@@ -16,10 +16,10 @@ scenarios:
       - loop:
           - function: "genNewPost"
           - post:
-              url: "/media/upload"
+              url: "/media"
               headers:
                 Content-Type: application/octet-stream
-                Accept: text/plain
+                Accept: application/json
               beforeRequest: "setNewPostImageBody"
               afterResponse: "genNewImageReply"
               ifTrue: "hasImage"
@@ -28,10 +28,15 @@ scenarios:
               headers:
                 Accept: text/plain
               json:
-                community: "{{ community }}"
-                creator: "{{ creator }}"
+                title: "{{ title }}"
+                community: { name: "{{communityName}}", id: "{{communityId}}" }
+
+                creator: { id: "{{creatorId}}", name: "{{creatorName}}" }
+
                 msg: "{{ msg }}"
+                date: ""
                 image: "{{ imageId }}"
                 parentId: "{{ parentId }}"
+                likes: []
               afterResponse: "genNewPostReply"
         count: 2

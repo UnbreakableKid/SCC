@@ -19,4 +19,5 @@ scenarios:
                 Accept: text/plain
               json:
                 name: "{{ name }}"
+              afterResponse: "genNewCommunityReply"
         count: 2

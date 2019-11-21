@@ -91,6 +91,7 @@ public class PostResource {
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.TEXT_PLAIN)
 
     public String addPost(Posts post) {
 
