@@ -3,51 +3,75 @@ config:
   target: "https://scc-backend-56982.azurewebsites.net"
   plugins:
     metrics-by-endpoint: {}
-  http:
-    pool: 60
+  #  http:
+  #    pool: 100    # set the maximum number of connections to server
   processor: "./test-utils.js"
+  variables:
+    metricsProcessEndpoint: "myProcessEndpoint" # function used to aggregate endpoints for statistics
   phases:
-    - duration: 10
-      arrivalRate: 10
+    - name: "Warm up" # WARM UP PHASE: duration: 20s, starting with 1 bew client/sec up to 5 new clients/sec
+      duration: 10
+      arrivalRate: 1
+      rampTo: 5
+    - name: "Main test" # MAIN TESTS: duration: 120s, with 5 new clients/sec
+      duration: 120 # NOTE: number of clients per second will depend on the complexity of your scenarios
+      arrivalRate: 5 # you need to try a number that can be handled by the client
 
 scenarios:
+  # Normal user that reads post and sometimes replies to posts
   - name: "Random reader"
     weight: 10
     flow:
       - function: "startBrowse"
-      - get:
+      - get: # get some initial page : last post in this case
           url: "/post/last/redis"
-          afterResponse: "selectFromPostList"
-      - loop:
+          afterResponse: "selectFromPostList" # select some posts for later browsing
+      - loop: # load the images from the post in the list
           - get:
+              ifTrue: "hasNextimageid"
+              url: "/media/{{ nextimageid }}"
+              headers:
+                Accept: image/*
+              afterResponse: "getImageReply"
+        whileTrue: "hasMoreInImageList"
+      - loop: #Browse main loop
+          - get: # get the thread for the next post (from the previous selected)
               ifTrue: "hasNextid"
               url: "/post/thread/{{ nextid }}"
-              afterResponse: "selectFromPostList"
-          - post:
+              afterResponse: "selectFromPostThread" # select posts to browse next and decide whether to reply or like this post
+          - loop: # load the image for the main post
+              - get:
+                  ifTrue: "hasNextimageid"
+                  url: "/media/{{ nextimageid }}"
+                  headers:
+                    Accept: image/*
+                  afterResponse: "getImageReply"
+            whileTrue: "hasMoreInImageList"
+          - post: # execute a like for the post
               ifTrue: "like"
-              url: "/like/{{ curid }}/{{ likeUser }}"
+              url: "/post/like/{{ curid }}/{{ sessionuser }}"
           - function: "genNewPost"
-          - post:
+          - post: # submit an image for a reply
               ifTrue: "hasImage and reply"
-              url: "/images"
+              url: "/media"
               headers:
                 Content-Type: application/octet-stream
                 Accept: text/plain
               beforeRequest: "setNewPostImageBody"
               afterResponse: "genNewImageReply"
-          - post:
+          - post: # submit the post for a reply
               ifTrue: "reply"
               url: "/post/p"
               headers:
                 Accept: text/plain
               json:
-                community: "{{ community }}"
-                creator: "{{ creator }}"
+                community: "{{ curcommunity }}"
+                creator: "{{ sessionuser }}"
                 msg: "{{ msg }}"
                 image: "{{ imageId }}"
                 parentId: "{{ curid }}"
               afterResponse: "genNewPostReply"
-        whileTrue: "endBrowse"
+        whileTrue: "endBrowse" # continue browsing until deciding to stop
 
   - name: "Troll"
     weight: 1
@@ -55,27 +79,24 @@ scenarios:
       - function: "startBrowse"
       - get:
           url: "/post/last/redis"
-          afterResponse: "selectAllFromPostList"
-      - loop:
-          - get:
-              ifTrue: "hasNextid"
-              url: "/post/thread/{{ nextid }}"
+          afterResponse: "selectAllFromPostList" # select all posts for replying to
+      - loop: # for each post
           - function: "genNewPost"
-          - post:
+          - post: # upload image
               ifTrue: "hasImage"
-              url: "/images"
+              url: "/media"
               headers:
                 Content-Type: application/octet-stream
                 Accept: text/plain
               beforeRequest: "setNewPostImageBody"
               afterResponse: "genNewImageReply"
-          - post:
+          - post: # upload reply
               url: "/post/p"
               headers:
                 Accept: text/plain
               json:
-                community: "{{ community }}"
-                creator: "{{ creator }}"
+                community: "{{ nextcommunity }}"
+                creator: "{{ sessionuser }}"
                 msg: "{{ msg }}"
                 image: "{{ imageId }}"
                 parentId: "{{ nextid }}"
@@ -87,7 +108,7 @@ scenarios:
     flow:
       - function: "genNewPost"
       - post:
-          url: "/images"
+          url: "/media"
           headers:
             Content-Type: application/octet-stream
             Accept: text/plain

@@ -15,14 +15,14 @@ scenarios:
     flow:
       - loop:
           - function: "genNewPost"
-          #- post:
-          #   url: "/media"
-          #  headers:
-          #   Content-Type: application/octet-stream
-          #  Accept: text/plain
-          # beforeRequest: "setNewPostImageBody"
-          # afterResponse: "genNewImageReply"
-          # ifTrue: "hasImage"
+          - post:
+              url: "/media/upload"
+              headers:
+                Content-Type: application/octet-stream
+                Accept: text/plain
+              beforeRequest: "setNewPostImageBody"
+              afterResponse: "genNewImageReply"
+              ifTrue: "hasImage"
           - post:
               url: "/post"
               headers:
