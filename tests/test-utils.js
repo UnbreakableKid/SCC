@@ -113,9 +113,7 @@ function genNewUser(context, events, done) {
  * Process reply for of new users to store the id on file
  */
 function genNewUserReply(requestParams, response, context, ee, next) {
-  if (
-      response.body.length > 0
-  ) {
+  if (response.body.length > 0) {
     userIds.push(response.body);
     fs.writeFileSync("userids.data", JSON.stringify(userIds));
   }
@@ -134,9 +132,7 @@ function genNewCommunity(context, events, done) {
 }
 
 function genNewCommunityReply(requestParams, response, context, ee, next) {
-  if (
-    response.body.length > 0
-  ) {
+  if (response.body.length > 0) {
     communityId.push(response.body);
     fs.writeFileSync("communityids.data", JSON.stringify(communityId));
   }
@@ -164,12 +160,17 @@ function genNewPost(context, events, done) {
   const title = `s/${Faker.lorem.sentence()}`;
   let randomCreator = getRandomIntInclusive(0, userNames.length - 1);
   let randomCommunity = getRandomIntInclusive(0, communityNames.length - 1);
+  let time = Date(Date.now()).toString();
   context.vars.communityName = communityNames[randomCommunity];
   context.vars.communityId = communityId[randomCommunity];
 
+  context.vars.date = time;
+  console.log(time);
+  console.log(context.vars.date);
   context.vars.creatorName = userNames[randomCreator];
   context.vars.creatorId = userIds[randomCreator];
   context.vars.msg = `${Faker.lorem.paragraph()}`;
+
   if (postIds.length > 0 && Math.random() < 0.8) {
     // 80% are replies
     let npost = postIds.sample();
