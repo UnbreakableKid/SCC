@@ -157,25 +157,28 @@ function getRandomIntInclusive(min, max) {
 
 function genNewPost(context, events, done) {
   loadData();
-  const title = `s/${Faker.lorem.sentence()}`;
+  const title = `${Faker.lorem.sentence()}`;
+  const msg = `${Faker.lorem.paragraph()}`;
+  console.log(msg);
+  console.log(typeof msg);
   let randomCreator = getRandomIntInclusive(0, userNames.length - 1);
   let randomCommunity = getRandomIntInclusive(0, communityNames.length - 1);
   let time = Date(Date.now()).toString();
+
   context.vars.communityName = communityNames[randomCommunity];
   context.vars.communityId = communityId[randomCommunity];
-
+  context.vars.title = title;
   context.vars.date = time;
-  console.log(time);
-  console.log(context.vars.date);
   context.vars.creatorName = userNames[randomCreator];
   context.vars.creatorId = userIds[randomCreator];
-  context.vars.msg = `${Faker.lorem.paragraph()}`;
+  context.vars.msg = msg;
+  console.log("here");
+  console.log(context.vars.msg);
 
   if (postIds.length > 0 && Math.random() < 0.8) {
     // 80% are replies
     let npost = postIds.sample();
     context.vars.parentId = npost[0];
-    context.vars.community = npost[1];
   } else {
     context.vars.parentId = null;
   }

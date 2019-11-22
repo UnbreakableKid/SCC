@@ -33,7 +33,7 @@ scenarios:
 
                 creator: { id: "{{creatorId}}", name: "{{creatorName}}" }
 
-                msg: "{{ msg }}"
+                message: "{{ msg }}"
                 date: "{{date}}"
                 image: "{{ imageId }}"
                 parentId: "{{ parentId }}"

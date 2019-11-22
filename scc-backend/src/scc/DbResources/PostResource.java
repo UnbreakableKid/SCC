@@ -35,29 +35,30 @@ public class PostResource {
 
     private String UsersCollection = db.getCollectionString("Posts");
     
-    @GET
+   @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
 
-    public Posts getPost(@PathParam("id") String id) {
+    public Posts getPost(@PathParam("id") String id){
+
 
         FeedOptions queryOptions = new FeedOptions();
         queryOptions.setEnableCrossPartitionQuery(true);
         queryOptions.setMaxDegreeOfParallelism(-1);
 
-        Iterator<FeedResponse<Document>> it = client.queryDocuments(UsersCollection,
-                String.format("SELECT * FROM Posts p WHERE p.id = '%s'", id), queryOptions).toBlocking().getIterator();
+        Iterator<FeedResponse<Document>> it = client.queryDocuments(
+                UsersCollection, String.format("SELECT * FROM Posts c WHERE c.id = '%s'", id),
+                queryOptions).toBlocking().getIterator();
 
-        if (it.hasNext())
-            for (Document d : it.next().getResults()) {
-                System.out.println(d.toJson());
-                Gson g = new Gson();
-                Posts u = g.fromJson(d.toJson(), Posts.class);
+        if( it.hasNext())
+			for( Document d : it.next().getResults()) {
+				System.out.println( d.toJson());
+				Gson g = new Gson();
+				Posts u = g.fromJson(d.toJson(), Posts.class);
                 return u;
-            }
+			}
 
         return null;
-
     }
     
     @GET
@@ -100,7 +101,7 @@ public class PostResource {
         Users u = ur.getUser(post.getCreator().getId());
         Communities c = cr.getCommunity(post.getCommunity().getId());
         
-        if (u != null && c != null && post.getLikes().size() == 0) {
+        if (u != null && c != null) {
 
             String collectionLink = String.format("/dbs/%s/colls/%s", "SCC-56982", "Posts");
             ResourceResponse<Document> resourceResponse = client.createDocument(collectionLink, post, null, false)
