@@ -141,6 +141,19 @@ public class PostResource {
         System.out.println("DOING GET USER");
 
         Users u = ur.getUser(userid);
+        
+        for (int i = 0; i < likes.size(); i++) {
+            Users c = likes.get(i);
+      
+            if (c.getId().equals(u.getId())) {
+                p.setLikes(likes);
+                String result = addPost(p);
+
+                return result;
+            }
+
+        }
+        
         likes.add(u);
 
         p.setLikes(likes);
