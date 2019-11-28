@@ -18,7 +18,7 @@ public class DatabaseConnector {
             ConnectionPolicy connectionPolicy = ConnectionPolicy.GetDefault();
             client = new AsyncDocumentClient.Builder().withServiceEndpoint(rb.getString("db.endpoint"))
                     .withMasterKeyOrResourceToken(rb.getString("db.masterkey")).withConnectionPolicy(connectionPolicy)
-                    .withConsistencyLevel(ConsistencyLevel.Eventual).build();
+                    .withConsistencyLevel(ConsistencyLevel.Session).build();
         }
         return client;
     }

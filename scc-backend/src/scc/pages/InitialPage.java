@@ -23,7 +23,7 @@ import resources.Database.entities.Posts;
 @Path("/pages/initial")
 public class InitialPage {
 
-    Boolean USINGCACHE = true;
+    Boolean USINGCACHE = false;
     
     private DatabaseConnector db = new DatabaseConnector();
     private AsyncDocumentClient client = db.getDocumentClient();

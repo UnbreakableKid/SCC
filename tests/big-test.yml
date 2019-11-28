@@ -1,0 +1,140 @@
+#Create initial set of posts
+config:
+  target: "https://scc-backend-56982.azurewebsites.net"
+  plugins:
+    metrics-by-endpoint: {}
+  http:
+    pool: 300 # set the maximum number of connections to server
+  processor: "./test-utils.js"
+  variables:
+    metricsProcessEndpoint: "myProcessEndpoint" # function used to aggregate endpoints for statistics
+  phases:
+    - name: "Warm up" # WARM UP PHASE: duration: 20s, starting with 1 bew client/sec up to 5 new clients/sec
+      duration: 10
+      arrivalRate: 1
+      rampTo: 5
+    - name: "Main test" # MAIN TESTS: duration: 120s, with 5 new clients/sec
+      duration: 180 # NOTE: number of clients per second will depend on the complexity of your scenarios
+      arrivalRate: 5 # you need to try a number that can be handled by the client
+
+scenarios:
+  - name: "Normal user"
+    weight: 5
+    flow:
+      - function: "genNewPost"
+      - get:
+          url: "/pages/initial"
+          afterResponse: "checkInitialPage" # select post to like
+      - post:
+          url: "/post"
+          headers:
+            Accept: text/plain
+          json:
+            title: "{{ title }}"
+            community: { name: "{{communityName}}", id: "{{communityId}}" }
+
+            creator: { id: "{{creatorId}}", name: "{{creatorName}}" }
+
+            message: "{{ msg }}"
+            date: "{{date}}"
+            image: "{{ imageId }}"
+            parentId: "{{id}}"
+            likes: []
+        afterResponse: "genNewPostReply"
+
+  #Normal user that reads post and likes from a specific user
+  - name: "Liker"
+    weight: 1
+    flow:
+      - function: "startBrowse"
+      - get:
+          url: "/search/creator/{{creatorName}}"
+          afterResponse: "selectFromPostList" # select post to like
+
+      - loop:
+          - put:
+              url: "/post/{{toLike}}/like/{{likerName}}"
+
+        count: 10
+
+  - name: "Troll"
+    weight: 2
+    flow:
+      - function: "genNewTrollPost"
+      - post: # upload image
+          ifTrue: "hasImage"
+          url: "/media"
+          headers:
+            Content-Type: application/octet-stream
+            Accept: application/json
+          beforeRequest: "setNewPostImageBody"
+          afterResponse: "genNewImageReply"
+      - post: # upload reply
+          url: "/post"
+          headers:
+            Accept: text/plain
+          json:
+            title: "{{ title }}"
+            community: { name: "{{communityName}}", id: "{{communityId}}" }
+
+            creator: { id: "{{creatorId}}", name: "{{creatorName}}" }
+
+            message: "{{ msg }}"
+            date: "{{date}}"
+            image: "{{ imageId }}"
+            parentId: "{{ parentId }}"
+            likes: []
+        whileTrue: "hasMoreIds"
+
+  - name: "Create communities"
+    weight: 4
+    flow:
+      - function: "genNewCommunity"
+      - post:
+          url: "/community"
+          headers:
+            Accept: text/plain
+          json:
+            name: "{{ name }}"
+          afterResponse: "genNewCommunityReply"
+
+  - name: "Create user"
+    weight: 7
+    flow:
+      - function: "genNewUser"
+      - post:
+          url: "/users"
+          headers:
+            Accept: text/plain
+          json:
+            name: "{{ name }}"
+          afterResponse: "genNewUserReply"
+
+  - name: "Create posts"
+    weight: 6
+    flow:
+      - function: "genNewPost"
+      - post:
+          url: "/media"
+          headers:
+            Content-Type: application/octet-stream
+            Accept: application/json
+          beforeRequest: "setNewPostImageBody"
+          afterResponse: "genNewImageReply"
+          ifTrue: "hasImage"
+      - post:
+          url: "/post"
+          headers:
+            Accept: text/plain
+          json:
+            title: "{{ title }}"
+            community: { name: "{{communityName}}", id: "{{communityId}}" }
+
+            creator: { id: "{{creatorId}}", name: "{{creatorName}}" }
+
+            message: "{{ msg }}"
+            date: "{{date}}"
+            image: "{{ imageId }}"
+            parentId: null
+            likes: []
+          afterResponse: "genNewPostReply"

@@ -4,6 +4,8 @@
  * Exported functions to be used in the testing scripts.
  */
 module.exports = {
+  genNewTrollPost,
+  //genRootPost,
   genNewUser,
   genNewUserReply,
   genNewCommunity,
@@ -19,7 +21,9 @@ module.exports = {
   selectFromPostList,
   selectFromPostThread,
   startBrowse,
-  endBrowse
+  endBrowse,
+  hasMoreIds,
+  checkInitialPage
 };
 
 const Faker = require("faker");
@@ -35,11 +39,11 @@ var images = [];
 
 // All endpoints starting with the following prefixes will be aggregated in the same for the statistics
 var statsPrefix = [
-  ["/post/thread/", "GET"],
+  ["/pages/thread/", "GET"],
   ["/post/like/", "POST"],
   ["/post/unlike/", "POST"],
   ["/image/", "GET"],
-  ["/post/p/", "GET"],
+  ["/post/", "GET"],
   ["/users/", "GET"],
   ["/community/", "GET"],
   ["/media/", "GET"]
@@ -85,6 +89,10 @@ function loadData() {
   if (fs.existsSync("communityids.data")) {
     str = fs.readFileSync("communityids.data", "utf8");
     communityId = JSON.parse(str);
+  }
+  if (fs.existsSync("postIds.data")) {
+    str = fs.readFileSync("postIds.data", "utf8");
+    postIds = JSON.parse(str);
   }
   var i;
   var basefile;
@@ -159,8 +167,7 @@ function genNewPost(context, events, done) {
   loadData();
   const title = `${Faker.lorem.sentence()}`;
   const msg = `${Faker.lorem.paragraph()}`;
-  console.log(msg);
-  console.log(typeof msg);
+
   let randomCreator = getRandomIntInclusive(0, userNames.length - 1);
   let randomCommunity = getRandomIntInclusive(0, communityNames.length - 1);
   let time = Date(Date.now()).toString();
@@ -172,8 +179,6 @@ function genNewPost(context, events, done) {
   context.vars.creatorName = userNames[randomCreator];
   context.vars.creatorId = userIds[randomCreator];
   context.vars.msg = msg;
-  console.log("here");
-  console.log(context.vars.msg);
 
   if (postIds.length > 0 && Math.random() < 0.8) {
     // 80% are replies
@@ -191,6 +196,65 @@ function genNewPost(context, events, done) {
   return done();
 }
 
+// function genRootPost(context, events, done) {
+//   console.log("doing root posts");
+//   loadData();
+//   const title = `${Faker.lorem.sentence()}`;
+//   const msg = `${Faker.lorem.paragraph()}`;
+//   console.log(msg);
+//   console.log(typeof msg);
+//   let randomCreator = getRandomIntInclusive(0, userNames.length - 1);
+//   let randomCommunity = getRandomIntInclusive(0, communityNames.length - 1);
+//   let time = Date(Date.now()).toString();
+
+//   context.vars.communityName = communityNames[randomCommunity];
+//   context.vars.communityId = communityId[randomCommunity];
+//   context.vars.title = title;
+//   context.vars.date = time;
+//   context.vars.creatorName = userNames[randomCreator];
+//   context.vars.creatorId = userIds[randomCreator];
+//   context.vars.msg = msg;
+//   console.log("here");
+//   console.log(context.vars.msg);
+
+//   context.vars.hasImage = false;
+//   if (Math.random() < 0.2) {
+//     // 20% of the posts have images
+//     context.vars.image = images.sample();
+//     context.vars.hasImage = true;
+//   }
+//   return done();
+// }
+
+function genNewTrollPost(context, events, done) {
+  loadData();
+  const title = "SPAM";
+  const msg = `${Faker.lorem.paragraph()}`;
+
+  let randomCreator = getRandomIntInclusive(0, userNames.length - 1);
+  let randomCommunity = getRandomIntInclusive(0, communityNames.length - 1);
+  let time = Date(Date.now()).toString();
+
+  context.vars.communityName = communityNames[randomCommunity];
+  context.vars.communityId = communityId[randomCommunity];
+  context.vars.title = title;
+  context.vars.date = time;
+  context.vars.creatorName = userNames[randomCreator];
+  context.vars.creatorId = userIds[randomCreator];
+  context.vars.msg = msg;
+
+  let npost = postIds.pop();
+  context.vars.parentId = npost;
+
+  context.vars.image = images.sample();
+  context.vars.hasImage = true;
+
+  return done();
+}
+
+function hasMoreIds() {
+  return postIds.length != 0;
+}
 /**
  * Select next post to read and store information in the following variables:
  * "nextid" - id of the next post to browse
@@ -240,8 +304,9 @@ function hasMoreInImageList(context, next) {
  * Stores in the array "postIds" the identifier and community of the uploaded post.
  */
 function genNewPostReply(requestParams, response, context, ee, next) {
-  if (response.body && response.body.length > 0) {
-    postIds.push([response.body, context.vars.community]);
+  if (response.body) {
+    postIds.push(response.body);
+    fs.writeFileSync("postIds.data", JSON.stringify(postIds));
   }
   return next();
 }
@@ -288,11 +353,11 @@ function getImageReply(requestParams, response, context, ee, next) {
  * "sessionuser" - name of the user for this session
  */
 function startBrowse(context, events, done) {
-  context.vars.idstoread = [];
-  context.vars.readimages = new Set();
-  context.vars.browsecount = 0;
-  context.vars.postlistimages = [];
-  context.vars.sessionuser = userNames.sample();
+  context.vars.creatorName =
+    userNames[getRandomIntInclusive(0, userNames.length - 1)];
+  context.vars.likerName =
+    userIds[getRandomIntInclusive(0, userNames.length - 1)];
+
   return done();
 }
 
@@ -318,43 +383,87 @@ function endBrowse(context, next) {
  * "like" - true/false whether should like post
  * "reply" - true/false whether should reply to post
  */
+// function selectFromPostList(requestParams, response, context, ee, next) {
+//   if (response.body && response.body.length > 0) {
+//     let resp = JSON.parse(response.body);
+//     if (typeof resp.posts !== "undefined") {
+//       let num = random(resp.posts.length / 2);
+//       var i;
+//       for (i = 0; i < num; i++) {
+//         let pp = resp.posts.sample();
+//         context.vars.idstoread.push([pp.id, pp.community]);
+//       }
+//       context.vars.postlistimages = [];
+//       for (i = 0; i < resp.posts.length; i++) {
+//         if (
+//           resp.posts[i].image !== "" &&
+//           !context.vars.readimages.has(resp.posts[i].image)
+//         )
+//           context.vars.postlistimages.push(resp.posts[i].image);
+//       }
+//       checkHasMoreInImageList(context);
+//     } else {
+//       context.vars.hasNextimageid = false;
+//     }
+//   }
+//   delete context.vars.like;
+//   delete context.vars.reply;
+//   if (context.vars.idstoread.length > 0) {
+//     context.vars.curid = context.vars.nextid;
+//     context.vars.curcommunity = context.vars.nextid;
+//     let pp = context.vars.idstoread.splice(-1, 1)[0];
+//     context.vars.nextid = pp[0];
+//     context.vars.nextcommunity = pp[1];
+//     context.vars.hasNextid = true;
+//     context.vars.browsecount++;
+//   } else {
+//     context.vars.hasNextid = false;
+//   }
+//   return next();
+// }
+
+var likes = [];
 function selectFromPostList(requestParams, response, context, ee, next) {
-  if (response.body && response.body.length > 0) {
+  if (response.body.length > 0) {
     let resp = JSON.parse(response.body);
-    if (typeof resp.posts !== "undefined") {
-      let num = random(resp.posts.length / 2);
-      var i;
-      for (i = 0; i < num; i++) {
-        let pp = resp.posts.sample();
-        context.vars.idstoread.push([pp.id, pp.community]);
-      }
-      context.vars.postlistimages = [];
-      for (i = 0; i < resp.posts.length; i++) {
-        if (
-          resp.posts[i].image !== "" &&
-          !context.vars.readimages.has(resp.posts[i].image)
-        )
-          context.vars.postlistimages.push(resp.posts[i].image);
-      }
-      checkHasMoreInImageList(context);
-    } else {
-      context.vars.hasNextimageid = false;
+    let list = resp.value;
+
+    for (let index = 0; index < list.length; index++) {
+      let id = list[index].id;
+      likes.push(id);
     }
-  }
-  delete context.vars.like;
-  delete context.vars.reply;
-  if (context.vars.idstoread.length > 0) {
-    context.vars.curid = context.vars.nextid;
-    context.vars.curcommunity = context.vars.nextid;
-    let pp = context.vars.idstoread.splice(-1, 1)[0];
-    context.vars.nextid = pp[0];
-    context.vars.nextcommunity = pp[1];
-    context.vars.hasNextid = true;
-    context.vars.browsecount++;
-  } else {
-    context.vars.hasNextid = false;
+    context.vars.likes = likes;
+    context.vars.toLike = likes[getRandomIntInclusive(0, likes.length - 1)];
+
+    context.vars.length = likes.length;
   }
   return next();
+}
+
+function checkInitialPage(requestParams, response, context, ee, next) {
+  if (response.body > 0) {
+    let initialPosts = JSON.parse(response.body);
+    let fixed = [];
+
+    for (let index = 0; index < initialPosts.length; index++) {
+      fixed.push(JSON.parse(initialPosts[index]));
+    }
+  }
+}
+
+function checkInitialPage(requestParams, response, context, ee, next) {
+  if (response.body) {
+    let initialPosts = JSON.parse(response.body);
+    let fixed = [];
+
+    for (let index = 0; index < initialPosts.length; index++) {
+      fixed.push(JSON.parse(initialPosts[index]));
+    }
+
+    context.vars.id = fixed[getRandomIntInclusive(0, fixed.length - 1)].id;
+
+    return next();
+  }
 }
 
 /**

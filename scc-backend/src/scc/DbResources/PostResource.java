@@ -46,8 +46,8 @@ public class PostResource {
         queryOptions.setEnableCrossPartitionQuery(true);
         queryOptions.setMaxDegreeOfParallelism(-1);
 
-        Iterator<FeedResponse<Document>> it = client.queryDocuments(
-                UsersCollection, String.format("SELECT * FROM Posts c WHERE c.id = '%s'", id),
+        Iterator<FeedResponse<Document>> it = client.queryDocuments(UsersCollection,
+        String.format("SELECT * FROM Posts c WHERE c.id = '%s'", id),
                 queryOptions).toBlocking().getIterator();
 
         if( it.hasNext())
@@ -122,47 +122,48 @@ public class PostResource {
 
         Posts p = getPost(id);
         
-        RequestOptions options = new RequestOptions();
-        options.setPartitionKey(new PartitionKey(p.getTitle()));
+        if (p != null) {
+            RequestOptions options = new RequestOptions();
+            options.setPartitionKey(new PartitionKey(p.getTitle()));
 
-        FeedOptions queryOptions = new FeedOptions();
-        queryOptions.setEnableCrossPartitionQuery(true);
-        queryOptions.setMaxDegreeOfParallelism(-1);
+            FeedOptions queryOptions = new FeedOptions();
+            queryOptions.setEnableCrossPartitionQuery(true);
+            queryOptions.setMaxDegreeOfParallelism(-1);
 
-        String document = String.format("/dbs/%s/colls/%s/docs/%s", "SCC-56982", "Posts", id);
-        System.out.println("DOING DELETE");
-        client.deleteDocument(document, options).toCompletable().await();
-        
-        System.out.println(document);
-        System.out.println(getPost(id));
+            String document = String.format("/dbs/%s/colls/%s/docs/%s", "SCC-56982", "Posts", id);
+            System.out.println("DOING DELETE");
+            client.deleteDocument(document, options).toCompletable().await();
 
-        
-        List<Users> likes = p.getLikes();
-        System.out.println("DOING GET USER");
+            System.out.println(document);
+            System.out.println(getPost(id));
 
-        Users u = ur.getUser(userid);
-        
-        for (int i = 0; i < likes.size(); i++) {
-            Users c = likes.get(i);
-      
-            if (c.getId().equals(u.getId())) {
-                p.setLikes(likes);
-                String result = addPost(p);
+            List<Users> likes = p.getLikes();
+            System.out.println("DOING GET USER");
 
-                return result;
+            Users u = ur.getUser(userid);
+
+            for (int i = 0; i < likes.size(); i++) {
+                Users c = likes.get(i);
+
+                if (c.getId().equals(u.getId())) {
+                    p.setLikes(likes);
+                    String result = addPost(p);
+
+                    return result;
+                }
+
             }
 
+            likes.add(u);
+
+            p.setLikes(likes);
+
+            System.out.println("DOING ADD POST");
+            String result = addPost(p);
+
+            return result;
         }
-        
-        likes.add(u);
-
-        p.setLikes(likes);
-
-        System.out.println("DOING ADD POST");
-        String result = addPost(p);
-
-
-        return result;
+        return null;
     }
     @PUT
     @Path("/{postid}/unlike/{userid}")
@@ -174,45 +175,45 @@ public class PostResource {
 
         Posts p = getPost(id);
         
-        RequestOptions options = new RequestOptions();
-        options.setPartitionKey(new PartitionKey(p.getTitle()));
+        if (p != null) {
+            RequestOptions options = new RequestOptions();
+            options.setPartitionKey(new PartitionKey(p.getTitle()));
 
-        FeedOptions queryOptions = new FeedOptions();
-        queryOptions.setEnableCrossPartitionQuery(true);
-        queryOptions.setMaxDegreeOfParallelism(-1);
+            FeedOptions queryOptions = new FeedOptions();
+            queryOptions.setEnableCrossPartitionQuery(true);
+            queryOptions.setMaxDegreeOfParallelism(-1);
 
-        String document = String.format("/dbs/%s/colls/%s/docs/%s", "SCC-56982", "Posts", id);
-        System.out.println("DOING DELETE");
-        client.deleteDocument(document, options).toCompletable().await();
-        
-        System.out.println(document);
-        System.out.println(getPost(id));
+            String document = String.format("/dbs/%s/colls/%s/docs/%s", "SCC-56982", "Posts", id);
+            System.out.println("DOING DELETE");
+            client.deleteDocument(document, options).toCompletable().await();
 
-        
-        List<Users> likes = p.getLikes();
-        System.out.println("DOING GET USER");
+            System.out.println(document);
+            System.out.println(getPost(id));
 
-        Users u = ur.getUser(userid);
-        
-        System.out.println(likes);
-        
-        for (int i = 0; i < likes.size(); i++) {
-            Users c = likes.get(i);
-            System.out.println(c.getId());
-            System.out.println(u.getId());
-            if (c.getId().equals(u.getId()))
-                likes.remove(i);
+            List<Users> likes = p.getLikes();
+            System.out.println("DOING GET USER");
+
+            Users u = ur.getUser(userid);
+
+            System.out.println(likes);
+
+            for (int i = 0; i < likes.size(); i++) {
+                Users c = likes.get(i);
+                System.out.println(c.getId());
+                System.out.println(u.getId());
+                if (c.getId().equals(u.getId()))
+                    likes.remove(i);
+            }
+
+            System.out.println(likes);
+            p.setLikes(likes);
+
+            System.out.println("DOING ADD POST");
+            String result = addPost(p);
+
+            return result;
         }
-        
-        System.out.println(likes);
-        p.setLikes(likes);
-
-
-        System.out.println("DOING ADD POST");
-        String result = addPost(p);
-
-
-        return result;
+        return null;
     }
     
 

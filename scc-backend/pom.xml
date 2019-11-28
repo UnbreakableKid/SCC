@@ -89,7 +89,7 @@
         <version>1.7.0</version>  
         <configuration> 
           <schemaVersion>V2</schemaVersion>  
-          <pricingTier>F1</pricingTier>  
+          <pricingTier>B1</pricingTier>  
           <region>westeurope</region>  
           <runtime> 
             <os>linux</os>  
