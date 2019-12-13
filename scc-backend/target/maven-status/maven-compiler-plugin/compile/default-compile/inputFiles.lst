@@ -1,9 +1,13 @@
-C:\Users\dblam\Documents\SCC\Work1\scc-backend\src\resources\Database\DatabaseConnector.java
-C:\Users\dblam\Documents\SCC\Work1\scc-backend\src\resources\Database\resources\Users.java
-C:\Users\dblam\Documents\SCC\Work1\scc-backend\src\resources\Database\resources\Posts.java
-C:\Users\dblam\Documents\SCC\Work1\scc-backend\src\scc\DbResources\MediaResource.java
-C:\Users\dblam\Documents\SCC\Work1\scc-backend\src\scc\srv\MainApplication.java
-C:\Users\dblam\Documents\SCC\Work1\scc-backend\src\scc\DbResources\CommunityResource.java
-C:\Users\dblam\Documents\SCC\Work1\scc-backend\src\resources\Database\resources\Communities.java
-C:\Users\dblam\Documents\SCC\Work1\scc-backend\src\scc\DbResources\PostResource.java
-C:\Users\dblam\Documents\SCC\Work1\scc-backend\src\scc\DbResources\UserResource.java
+C:\Users\João Rafael Pacheco\Documents\SCC\Work\scc-backend\src\resources\Database\RedisConnector.java
+C:\Users\João Rafael Pacheco\Documents\SCC\Work\scc-backend\src\scc\DbResources\UserResource.java
+C:\Users\João Rafael Pacheco\Documents\SCC\Work\scc-backend\src\scc\srv\MainApplication.java
+C:\Users\João Rafael Pacheco\Documents\SCC\Work\scc-backend\src\scc\DbResources\CommunityResource.java
+C:\Users\João Rafael Pacheco\Documents\SCC\Work\scc-backend\src\resources\Database\entities\Users.java
+C:\Users\João Rafael Pacheco\Documents\SCC\Work\scc-backend\src\scc\pages\InitialPage.java
+C:\Users\João Rafael Pacheco\Documents\SCC\Work\scc-backend\src\scc\pages\ThreadPage.java
+C:\Users\João Rafael Pacheco\Documents\SCC\Work\scc-backend\src\scc\DbResources\PostResource.java
+C:\Users\João Rafael Pacheco\Documents\SCC\Work\scc-backend\src\resources\Database\DatabaseConnector.java
+C:\Users\João Rafael Pacheco\Documents\SCC\Work\scc-backend\src\scc\search\CognitiveSearch.java
+C:\Users\João Rafael Pacheco\Documents\SCC\Work\scc-backend\src\resources\Database\entities\Posts.java
+C:\Users\João Rafael Pacheco\Documents\SCC\Work\scc-backend\src\scc\DbResources\MediaResource.java
+C:\Users\João Rafael Pacheco\Documents\SCC\Work\scc-backend\src\resources\Database\entities\Communities.java
