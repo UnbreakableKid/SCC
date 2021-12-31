@@ -1,10 +1,3 @@
-# SCC
+Cloud Reddit-like server application created to be deployed in Azure.
 
-## TODO
-
-~~Have to implement cache~~
-
-```
-Have to finish the professors tests
-Have to create a function to redo initial page
-```
+Created using JAVA and added Kubernetes
